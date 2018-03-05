@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="js/bmob-min.js"></script>
+<title>签到名单</title>
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+<link rel="stylesheet" type="text/css" href="css/fform.css">
+<style type="text/css">
+
+</style>
+</head>
+<body>
+<div class="htmleaf-container">
+    <div class="wrapper">
+
+        <div class="formdiv" style="margin-top: 2% ;">
+            <div style="height: 80px;margin-top: -5%;position: relative;">
+                <h2  style="position:absolute; top:50%; transform:translate(40%,-50%);color: #73B9B5">签到名单</h2>
+                <span class="date" ><h5 id="sum" style="color:#74CAB6"></h5></span>
+            </div>
+
+            <table class="table table-hover" style="margin-top: 1%; width: 90%;margin-left: 4%;margin-bottom: -4%; font-size : .8em;">
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>经度</th>
+                        <th>纬度</th>
+                        <th>距离</th>
+                        <th>签到时间</th>
+                    </tr>
+                </thead>
+                <tbody id="table"></tbody>
+            </table>
+            <form class="form" style=" margin-top: 5%; margin-bottom: -7%; margin-left: 4%;">
+
+				<ul id="lpage" class="pagination">
+	            </ul>
+
+            </form>
+        </div>
+
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+function set(num){
+    //Bmob.initialize("Application ID", "REST API Key");
+    Bmob.initialize("2370d75fb5cfcfcd743462b9e3f76d87", "8e39cf4d2c9d0d89afcbfdcb220af080");
+    var item = Bmob.Object.extend("gpsitem");
+    var query = new Bmob.Query(item);
+    query.limit(100);
+    // 查询所有数据
+    query.find({
+      success: function(results) {
+
+            var ldata = new Array();
+            var pdata = new Array();
+            var sdata = new Array();
+            var j = 0;
+
+            sdata.push('签到人数：' + (results.length-1));
+
+            for (var i = (num-1)*8+1; i < results.length; i++) {
+                j=j+1;
+                var object = results[i];
+                ldata.push('<tr>');
+                ldata.push('<td>' + object.get('studentNum') + '</td>');
+                ldata.push('<td>' + object.get('studentName') + '</td>');
+                ldata.push('<td>' + object.get('lat') + '</td>');
+                ldata.push('<td>' + object.get('lng') + '</td>');
+                ldata.push('<td>' + object.get('distance') + '</td>');
+                ldata.push('<td>' + object.createdAt + '</td>');
+                ldata.push('</tr>');
+                if (j==8) {break;}
+            }
+
+
+
+
+            if (num == 1) {
+                pdata.push('<li class="page-item disabled"><a class="page-link" style="font-size : .8em;color:#74CAB6" href="" onclick="set('+(num-1)+');return false;">Previous</a></li>');
+            }
+            else {
+                pdata.push('<li class="page-item"><a class="page-link" style="font-size : .8em;color:#74CAB6" href="" onclick="set('+(num-1)+');return false;">Previous</a></li>');
+            }
+
+			for (var i = 0; i < results.length/8; i++) {
+				if (i+1 == num) {
+					pdata.push('<li class="page-item active"><a class="page-link" style="font-size : .8em;" onclick="set('+(i+1)+')">'+(i+1)+'</a></li>');
+				}
+				else
+                	pdata.push('<li class="page-item"><a class="page-link"  style="font-size : .8em;"  onclick="set('+(i+1)+')">'+(i+1)+'</a></li>');
+           }
+
+           if (num==(i)) {
+                pdata.push('<li class="page-item"><a class="page-link" style="font-size : .8em;color:#74CAB6" href="" onclick="set('+(num)+');return false;">Next</a></li>');
+           }
+           else {
+                pdata.push('<li class="page-item"><a class="page-link" style="font-size : .8em;color:#74CAB6" href="" onclick="set('+(num+1)+');return false;">Next</a></li>');
+           }
+
+            document.getElementById('sum').innerHTML = sdata.join('');
+            document.getElementById('table').innerHTML = ldata.join('');
+            document.getElementById('lpage').innerHTML = pdata.join('');
+
+      },
+      error: function(error) {
+        alert("查询失败: " + error.code + " " + error.message);
+      }
+    });
+
+
+}
+set(1);
+</script>
+
+</div>
+</body>
+</html>
